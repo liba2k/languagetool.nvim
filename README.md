@@ -14,7 +14,7 @@ Using [lazy.nvim](https://github.com/folke/lazy.nvim):
 
 ```lua
 {
-  "yourusername/languagetool.nvim",
+  "liba2k/languagetool.nvim",
   opts = {
     server_url = "http://localhost:8081",
     language = "en-US",
