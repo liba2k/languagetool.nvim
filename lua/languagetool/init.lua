@@ -128,9 +128,9 @@ end
 local function offset_to_position(offset, lines)
   local remaining = offset
   for line_idx, line in ipairs(lines) do
-    local line_len = #line
+    local line_len = vim.fn.strcharlen(line)
     if remaining <= line_len then
-      return line_idx - 1, remaining
+      return line_idx - 1, vim.fn.byteidx(line, remaining)
     end
     -- +1 for the newline character between lines
     remaining = remaining - line_len - 1
