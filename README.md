@@ -56,7 +56,7 @@ require("languagetool").setup({
 |---------|-------------|
 | `:LTCheck` | Check current line |
 | `:'<,'>LTCheck` | Check visual selection |
-| `:LTCheckBuffer` | Check entire buffer |
+| `:LTCheckBuffer` | Check entire buffer. The check happens on the *saved* version, so `:w` before calling this command. |
 | `:LTFix` | Show available fixes at cursor |
 | `:LTClear` | Clear all LanguageTool diagnostics |
 
