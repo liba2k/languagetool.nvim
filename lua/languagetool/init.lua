@@ -93,6 +93,38 @@ local function check_text_async(text, callback)
   )
 end
 
+--- Make an async request to LanguageTool API for an entire file
+---@param path string The path of the file we want to check
+---@param callback fun(matches: table|nil, err: string|nil)
+local function check_file_async(path, callback)
+  local url = M.config.server_url .. "/v2/check"
+  local language_data = "language=" .. url_encode(M.config.language)
+  vim.system(
+    { "curl", "-s", "--data", language_data, "--data-urlencode", "text@"..path, url },
+    { text = true },
+    vim.schedule_wrap(function(result)
+      if result.code ~= 0 then
+        callback(nil, "curl failed with code " .. result.code)
+        return
+      end
+
+      local ok, response = pcall(vim.json.decode, result.stdout)
+      if not ok then
+                print(result.stdout)
+        callback(nil, response)
+        return
+      end
+
+      if response.matches then
+        callback(response.matches, nil)
+      else
+        callback({}, nil)
+      end
+    end)
+  )
+
+end
+
 --- Convert LanguageTool issue type to vim diagnostic severity
 ---@param match table
 ---@return integer
@@ -306,7 +338,7 @@ function M.check_buffer()
 
   vim.notify("Checking buffer with LanguageTool...", vim.log.levels.INFO)
 
-  check_text_async(text, function(matches, err)
+  check_file_async(vim.api.nvim_buf_get_name(0), function(matches, err)
     if err then
       vim.notify("LanguageTool error: " .. err, vim.log.levels.ERROR)
       return
